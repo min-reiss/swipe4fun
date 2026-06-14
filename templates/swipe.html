@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="swipe-container">
+    <div class="swipe-header">
+        <div class="header-icon">💜</div>
+        <h2>Выбери подругу</h2>
+        <div class="counter">Осталось: <span id="counter">{{ characters|length }}</span></div>
+    </div>
+    
+    <div class="cards-container" id="cardsContainer">
+        {% for character in characters %}
+        <div class="card" data-id="{{ character.id }}" style="z-index: {{ characters|length - loop.index }}">
+            <div class="card-photo">
+                <img src="/static/photos/{{ character.photo }}" alt="{{ character.name }}">
+                <div class="photo-overlay"></div>
+            </div>
+            <div class="card-info">
+                <div class="name-age">{{ character.name }}, {{ character.age }}</div>
+                <div class="bio">{{ character.bio }}</div>
+                <div class="interests">
+                    {% for interest in character.interests %}
+                    <span class="interest-tag">{{ interest }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="swipe-actions">
+        <button class="action-btn dislike-btn" id="dislikeBtn">✕</button>
+        <button class="action-btn superlike-btn" id="superlikeBtn">⭐</button>
+        <button class="action-btn like-btn" id="likeBtn">❤️</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/swipe.js"></script>
+{% endblock %}

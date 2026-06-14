@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="result-screen">
+    <div class="result-card">
+        <div class="result-emoji">{{ ending.emoji }}</div>
+        <h2 class="result-title">{{ ending.title }}</h2>
+        <p class="result-description">{{ ending.description }}</p>
+        
+        <div class="result-actions">
+            <a href="{{ url_for('swipe') }}" class="result-btn">Продолжить знакомства</a>
+            <a href="{{ url_for('index') }}" class="result-btn secondary">На главную</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

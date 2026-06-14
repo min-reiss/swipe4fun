@@ -1,0 +1,497 @@
+/* static/css/style.css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #f3e8ff 0%, #e8d5f5 50%, #f0e6ff 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* СТАРТОВАЯ СТРАНИЦА */
+.start-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.start-content {
+    text-align: center;
+    background: white;
+    border-radius: 24px;
+    padding: 60px 40px;
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+    max-width: 500px;
+    width: 90%;
+}
+
+.logo h1 {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.logo h2 {
+    font-size: 36px;
+    color: #7c3aed;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #9333ea;
+    font-size: 18px;
+    margin-bottom: 32px;
+}
+
+.start-description {
+    color: #6b7280;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.start-description p {
+    margin-bottom: 12px;
+}
+
+.start-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    text-decoration: none;
+    padding: 18px 48px;
+    border-radius: 50px;
+    font-size: 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+}
+
+.arrow {
+    font-size: 24px;
+    transition: transform 0.3s ease;
+}
+
+.start-button:hover .arrow {
+    transform: translateX(4px);
+}
+
+/* СТРАНИЦА СО СВАЙПАМИ */
+.swipe-container {
+    width: 100%;
+    max-width: 450px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.swipe-header {
+    text-align: center;
+    padding: 20px 0;
+    color: #7c3aed;
+}
+
+.header-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.swipe-header h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.counter {
+    color: #9333ea;
+    font-size: 14px;
+}
+
+.cards-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.card {
+    position: absolute;
+    width: 100%;
+    height: 500px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card-photo {
+    width: 100%;
+    height: 65%;
+    background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+    position: relative;
+}
+
+.card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 20px;
+    height: 35%;
+}
+
+.name-age {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.bio {
+    color: #6b7280;
+    font-size: 16px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.interest-tag {
+    background: #f3e8ff;
+    color: #7c3aed;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.swipe-actions {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.action-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dislike-btn {
+    background: white;
+    color: #ef4444;
+}
+
+.dislike-btn:hover {
+    background: #fef2f2;
+    transform: scale(1.1);
+}
+
+.superlike-btn {
+    background: white;
+    color: #8b5cf6;
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+}
+
+.superlike-btn:hover {
+    background: #f3e8ff;
+    transform: scale(1.1);
+}
+
+.like-btn {
+    background: white;
+    color: #ec4899;
+}
+
+.like-btn:hover {
+    background: #fdf2f8;
+    transform: scale(1.1);
+}
+
+/* СТРАНИЦА ЧАТА */
+.chat-container {
+    width: 100%;
+    max-width: 500px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.back-btn {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.chat-partner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-partner img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chat-partner span {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #faf5ff;
+}
+
+.chat-choices {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #e9d5ff;
+}
+
+/* СТРАНИЦА РЕЗУЛЬТАТА */
+.result-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 20px;
+}
+
+.result-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 32px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+    max-width: 500px;
+    width: 90%;
+}
+
+.result-emoji {
+    font-size: 72px;
+    margin-bottom: 24px;
+}
+
+.result-title {
+    color: #7c3aed;
+    font-size: 28px;
+    margin-bottom: 16px;
+}
+
+.result-description {
+    color: #6b7280;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.result-btn {
+    display: block;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.result-btn.secondary {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+/* СТИЛИ ДЛЯ ЧАТА */
+.message {
+    max-width: 80%;
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    animation: messageAppear 0.3s ease;
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.candidate-message {
+    background: #f3e8ff;
+    color: #4c1d95;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.bride-message {
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.choice-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    background: white;
+    border: 2px solid #e9d5ff;
+    border-radius: 14px;
+    color: #7c3aed;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    animation: slideIn 0.4s ease backwards;
+}
+
+.choice-btn:hover {
+    background: #faf5ff;
+    border-color: #7c3aed;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* EMPTY STATE */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+.empty-emoji {
+    font-size: 72px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 24px;
+    color: #7c3aed;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 24px;
+}
+
+.liked-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.liked-item {
+    background: #f3e8ff;
+    color: #7c3aed;
+    padding: 12px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.liked-item:hover {
+    background: #e9d5ff;
+    transform: translateX(4px);
+}
+
+/* ФИКС ДЛЯ КАРТОЧЕК */
+.card {
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    cursor: grab;
+}
+
+.card:active {
+    cursor: grabbing;
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 500px) {
+    .swipe-container {
+        padding: 10px;
+    }
+    
+    .card {
+        height: 450px;
+    }
+    
+    .action-btn {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+    }
+}

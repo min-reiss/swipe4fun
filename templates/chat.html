@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <a href="{{ url_for('swipe') }}" class="back-btn">← Назад</a>
+        <div class="chat-partner">
+            <img src="/static/photos/{{ character.photo }}" alt="{{ character.name }}">
+            <span>{{ character.name }}</span>
+        </div>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <!-- Сообщения будут добавляться через JS -->
+    </div>
+    
+    <div class="chat-choices" id="chatChoices">
+        <!-- Кнопки выбора появятся здесь -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Передаем данные диалога в JavaScript
+    var dialogData = {{ dialog | tojson | safe }};
+    var characterId = {{ character.id }};
+    
+    console.log('Dialog data loaded:', dialogData);
+    console.log('Character ID:', characterId);
+</script>
+<script src="/static/js/chat.js"></script>
+{% endblock %}
