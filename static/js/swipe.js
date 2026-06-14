@@ -7,7 +7,12 @@ class TinderSwipe {
         this.likedCharacters = [];
         this.isDragging = false;
         this.startX = 0;
+        this.startY = 0;
         this.currentX = 0;
+        this.currentY = 0;
+        
+        // Инициализация аудио контекста для звуков
+        this.audioContext = null;
         
         this.init();
     }
@@ -28,6 +33,66 @@ class TinderSwipe {
         
         // Drag события
         this.setupDragEvents();
+    }
+    
+    // Инициализация аудио (нужен пользовательский клик для браузеров)
+    initAudio() {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+    
+    // Проигрывание звука
+    playSound(type) {
+        // Инициализируем аудио при первом использовании
+        this.initAudio();
+        
+        if (!this.audioContext) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        // Настройка звука в зависимости от действия
+        switch(type) {
+            case 'like':
+                // Приятный высокий звук для лайка
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(523.25, this.audioContext.currentTime); // До
+                oscillator.frequency.setValueAtTime(659.25, this.audioContext.currentTime + 0.1); // Ми
+                oscillator.frequency.setValueAtTime(783.99, this.audioContext.currentTime + 0.2); // Соль
+                gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.3);
+                break;
+                
+            case 'dislike':
+                // Низкий звук для дизлайка
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(200, this.audioContext.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.2);
+                break;
+                
+            case 'superlike':
+                // Звук-сюрприз для суперлайка
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(440, this.audioContext.currentTime); // Ля
+                oscillator.frequency.setValueAtTime(554.37, this.audioContext.currentTime + 0.1); // До#
+                oscillator.frequency.setValueAtTime(659.25, this.audioContext.currentTime + 0.2); // Ми
+                oscillator.frequency.setValueAtTime(880, this.audioContext.currentTime + 0.3); // Ля
+                gainNode.gain.setValueAtTime(0.12, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.4);
+                break;
+        }
     }
     
     showTopCard() {
@@ -68,6 +133,7 @@ class TinderSwipe {
         
         this.isDragging = true;
         this.startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        this.startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
         
         const card = this.cards[this.currentCardIndex];
         card.style.transition = 'none';
@@ -77,28 +143,50 @@ class TinderSwipe {
         if (!this.isDragging) return;
         
         this.currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-        const diff = this.currentX - this.startX;
+        this.currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        
+        const diffX = this.currentX - this.startX;
+        const diffY = this.currentY - this.startY;
         const card = this.cards[this.currentCardIndex];
         
-        // Двигаем карточку
-        card.style.transform = `translateX(${diff}px) rotate(${diff * 0.1}deg)`;
-        
-        // Меняем прозрачность в зависимости от свайпа
-        const opacity = 1 - Math.abs(diff) / 500;
-        card.style.opacity = Math.max(opacity, 0.3);
+        // Определяем основное направление движения
+        if (Math.abs(diffY) > Math.abs(diffX) && diffY < -50) {
+            // Движение вверх (суперлайк)
+            const progress = Math.min(Math.abs(diffY) / 300, 1);
+            card.style.transform = `translateY(${diffY}px) scale(${1 - progress * 0.3})`;
+            card.style.opacity = Math.max(1 - progress, 0.3);
+        } else {
+            // Горизонтальное движение (лайк/дизлайк)
+            card.style.transform = `translateX(${diffX}px) rotate(${diffX * 0.1}deg)`;
+            const opacity = 1 - Math.abs(diffX) / 500;
+            card.style.opacity = Math.max(opacity, 0.3);
+        }
     }
     
     endDrag() {
         if (!this.isDragging) return;
         
         this.isDragging = false;
-        const diff = this.currentX - this.startX;
+        const diffX = this.currentX - this.startX;
+        const diffY = this.currentY - this.startY;
         const card = this.cards[this.currentCardIndex];
         card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
         
-        if (Math.abs(diff) > 100) {
+        // Определяем направление свайпа
+        if (Math.abs(diffY) > Math.abs(diffX) && diffY < -100) {
+            // Свайп вверх - суперлайк
+            this.playSound('superlike');
+            this.animateSwipe(card, 'up');
+        } else if (Math.abs(diffX) > 100) {
             // Свайп влево или вправо
-            const direction = diff > 0 ? 'right' : 'left';
+            const direction = diffX > 0 ? 'right' : 'left';
+            
+            if (direction === 'right') {
+                this.playSound('like');
+            } else {
+                this.playSound('dislike');
+            }
+            
             this.animateSwipe(card, direction);
         } else {
             // Возвращаем карточку на место
@@ -111,11 +199,26 @@ class TinderSwipe {
         if (this.currentCardIndex >= this.cards.length) return;
         
         const card = this.cards[this.currentCardIndex];
+        
+        // Проигрываем соответствующий звук
+        switch(direction) {
+            case 'right':
+                this.playSound('like');
+                break;
+            case 'left':
+                this.playSound('dislike');
+                break;
+            case 'up':
+                this.playSound('superlike');
+                break;
+        }
+        
         this.animateSwipe(card, direction);
     }
     
     animateSwipe(card, direction) {
         const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
         let transformValue;
         
         switch(direction) {
@@ -126,7 +229,7 @@ class TinderSwipe {
                 transformValue = `translateX(${screenWidth}px) rotate(30deg)`;
                 break;
             case 'up':
-                transformValue = `translateY(-${screenWidth}px) scale(0.5)`;
+                transformValue = `translateY(-${screenHeight}px) scale(0.5) rotate(0deg)`;
                 break;
         }
         
