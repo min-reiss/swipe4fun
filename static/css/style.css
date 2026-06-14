@@ -530,3 +530,140 @@ body {
         opacity: 1;
     }
 }
+
+/* СТРАНИЦА СО СВАЙПАМИ - ИСПРАВЛЕНИЯ */
+.swipe-container {
+    width: 100%;
+    max-width: 450px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: relative;
+}
+
+.swipe-header {
+    text-align: center;
+    padding: 20px 0 25px 0;
+    color: #7c3aed;
+    flex-shrink: 0;  /* Не сжимается */
+    z-index: 100;  /* ← Увеличен z-index, теперь точно поверх всего */
+    position: relative;  /* ← Обязательно для z-index */
+    background: transparent;  /* Прозрачный фон */
+}
+
+.header-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.swipe-header h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.counter {
+    color: #9333ea;
+    font-size: 14px;
+}
+.cards-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 60px 0 20px 0;  /* Отступы сверху и снизу */
+    min-height: 0;  /* Важно для flex */
+    z-index: 2;
+}
+
+.card {
+    position: absolute;
+    width: 100%;
+    max-width: 400px;  /* Ограничиваем максимальную ширину */
+    height: 480px;  /* Чуть уменьшена высота */
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card-photo {
+    width: 100%;
+    height: 60%;  /* Уменьшено с 65% */
+    background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+    position: relative;
+}
+
+.card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 20px;
+    height: 40%;  /* Увеличено с 35% */
+}
+
+/* Кнопки свайпа - фикс перекрытия */
+.swipe-actions {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px 0 30px 0;  /* Увеличен нижний отступ */
+    flex-shrink: 0;  /* Не сжимается */
+    z-index: 3;  /* Поверх карточек */
+    position: relative;
+    background: transparent;  /* Прозрачный фон */
+    margin-top: auto;  /* Прижимаем к низу */
+}
+
+.action-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid #e9d5ff;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dislike-btn {
+    color: #ef4444;
+}
+
+.dislike-btn:hover {
+    background: #fef2f2;
+    transform: scale(1.1);
+    border-color: #ef4444;
+}
+
+.superlike-btn {
+    color: #8b5cf6;
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+}
+
+.superlike-btn:hover {
+    background: #f3e8ff;
+    transform: scale(1.1);
+    border-color: #8b5cf6;
+}
+
+.like-btn {
+    color: #ec4899;
+}
+
+.like-btn:hover {
+    background: #fdf2f8;
+    transform: scale(1.1);
+    border-color: #ec4899;
+}
