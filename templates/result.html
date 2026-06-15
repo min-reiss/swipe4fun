@@ -8,8 +8,7 @@
         <p class="result-description">{{ ending.description }}</p>
         
         <div class="result-actions">
-            <a href="{{ url_for('matches') }}" class="result-btn">← К списку кандидатов</a>
-            <a href="{{ url_for('index') }}" class="result-btn secondary">🔄 На главную</a>
+            <a href="{{ url_for('index') }}" class="result-btn secondary" onclick="sessionStorage.clear()">🔄 На главную</a>
         </div>
     </div>
 </div>

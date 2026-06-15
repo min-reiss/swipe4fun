@@ -10,14 +10,23 @@
         </div>
         
         <div class="start-description">
-            <p>Тебя ждут 5 потрясающих кандидаток. Свайпай вправо, если нравится, влево — если нет.</p>
+            <p>Тебя ждут потрясающие кандидатки. Свайпай вправо, если нравится, влево — если нет.</p>
             <p>С избранными можно будет пообщаться в чате и узнать, чем закончится ваша встреча!</p>
         </div>
         
-        <a href="/swipe" class="start-button">
+        <a href="/swipe" class="start-button" onclick="resetProgress()">
             <span>Начать игру</span>
             <span class="arrow">→</span>
         </a>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function resetProgress() {
+    // Очищаем весь sessionStorage
+    sessionStorage.clear();
+}
+</script>
 {% endblock %}

@@ -6,6 +6,12 @@
         <h2 class="match-title">Твой выбор 💜</h2>
         <p class="match-subtitle">Выбери, с кем хочешь пообщаться!</p>
     </div>
+    
+    <!-- Предупреждение при первом открытии -->
+    <div class="warning-message" id="warningMessage">
+        ⚠️ Кандидата на свидание можно выбрать только одного!!!
+    </div>
+    
     <div class="match-grid" id="matchGrid">
         {% for character in characters %}
         <div class="match-card liked" data-id="{{ character.id }}">
@@ -15,7 +21,7 @@
             </div>
             <div class="match-card-info">
                 <div class="match-name">{{ character.name }}, {{ character.age }}</div>
-                <div class="match-bio">{{ character.bio }}</div>
+                <div class="match-bio">{{ character.shortBio if character.shortBio else character.bio[:50] }}</div>
             </div>
             <div class="match-card-actions">
                 <button class="card-chat-btn" onclick="window.location.href='/chat/{{ character.id }}'">
@@ -26,7 +32,7 @@
         {% endfor %}
     </div>
     <div class="match-actions-bottom">
-        <a href="/" class="reset-btn">🔄 На главную</a>
+        <a href="/" class="reset-btn" onclick="sessionStorage.clear()">🔄 На главную</a>
     </div>
 </div>
 {% endblock %}

@@ -248,5 +248,10 @@ class TinderSwipe {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Если это новый заход — очищаем старые данные
+    if (!sessionStorage.getItem('game_started')) {
+        sessionStorage.clear();
+        sessionStorage.setItem('game_started', 'true');
+    }
     new TinderSwipe();
 });
