@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="matches-page">
+    <div class="matches-header">
+        <h2 class="match-title">Твой выбор 💜</h2>
+        <p class="match-subtitle">Выбери, с кем хочешь пообщаться!</p>
+    </div>
+    <div class="match-grid" id="matchGrid">
+        {% for character in characters %}
+        <div class="match-card liked" data-id="{{ character.id }}">
+            <div class="match-card-photo">
+                <img src="/static/photos/{{ character.photo }}" alt="{{ character.name }}">
+                <div class="match-status">❤️</div>
+            </div>
+            <div class="match-card-info">
+                <div class="match-name">{{ character.name }}, {{ character.age }}</div>
+                <div class="match-bio">{{ character.bio }}</div>
+            </div>
+            <div class="match-card-actions">
+                <button class="card-chat-btn" onclick="window.location.href='/chat/{{ character.id }}'">
+                    💬 Чат
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="match-actions-bottom">
+        <a href="/" class="reset-btn">🔄 На главную</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/matches.js"></script>
+{% endblock %}

@@ -2,18 +2,14 @@
 
 class DialogChat {
     constructor(dialogData, characterId) {
-        console.log('DialogChat constructor called');
-        
         this.dialog = dialogData;
         this.characterId = characterId;
         this.currentMessageIndex = 0;
         this.chatMessages = document.getElementById('chatMessages');
         this.chatChoices = document.getElementById('chatChoices');
         this.isTyping = false;
-        this.chatEnded = false;  // Флаг завершения чата
         this.audioContext = null;
         
-        // Загружаем историю, если чат уже был
         this.loadHistory();
         
         if (!this.chatMessages || !this.chatChoices) {
@@ -30,13 +26,11 @@ class DialogChat {
             return;
         }
         
-        // Если чат уже прочитан - показываем кнопку "Свидание"
         if (this.isChatRead()) {
             this.showDateButton();
             return;
         }
         
-        // Если есть история - продолжаем с места остановки
         if (this.hasHistory()) {
             this.showNextMessage();
         } else {
@@ -44,44 +38,41 @@ class DialogChat {
         }
     }
     
-    // Проверка - прочитан ли чат полностью
     isChatRead() {
-        return sessionStorage.getItem(`chat_read_${this.characterId}`) === 'true';
+        return sessionStorage.getItem('chat_read_' + this.characterId) === 'true';
     }
     
-    // Проверка - есть ли история
     hasHistory() {
-        return sessionStorage.getItem(`chat_progress_${this.characterId}`) !== null;
+        return sessionStorage.getItem('chat_progress_' + this.characterId) !== null;
     }
     
-    // Загрузка истории
     loadHistory() {
-        const saved = sessionStorage.getItem(`chat_progress_${this.characterId}`);
+        const saved = sessionStorage.getItem('chat_progress_' + this.characterId);
         if (saved) {
             this.currentMessageIndex = parseInt(saved);
         }
         
-        const savedMessages = sessionStorage.getItem(`chat_messages_${this.characterId}`);
+        const savedMessages = sessionStorage.getItem('chat_messages_' + this.characterId);
         if (savedMessages) {
             this.chatMessages.innerHTML = savedMessages;
             this.scrollToBottom();
         }
     }
     
-    // Сохранение прогресса
     saveProgress() {
-        sessionStorage.setItem(`chat_progress_${this.characterId}`, this.currentMessageIndex);
-        sessionStorage.setItem(`chat_messages_${this.characterId}`, this.chatMessages.innerHTML);
+        sessionStorage.setItem('chat_progress_' + this.characterId, this.currentMessageIndex);
+        sessionStorage.setItem('chat_messages_' + this.characterId, this.chatMessages.innerHTML);
     }
     
-    // Пометить чат как прочитанный
     markAsRead() {
-        sessionStorage.setItem(`chat_read_${this.characterId}`, 'true');
+        sessionStorage.setItem('chat_read_' + this.characterId, 'true');
     }
     
     initAudio() {
         if (!this.audioContext) {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            try {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch(e) {}
         }
     }
     
@@ -239,12 +230,10 @@ class DialogChat {
                     this.currentMessageIndex++;
                     this.saveProgress();
                     
-                    // Проверяем, есть ли ещё сообщения
                     if (this.currentMessageIndex < this.dialog.messages.length) {
                         this.isTyping = false;
                         setTimeout(() => this.showNextMessage(), 500);
                     } else {
-                        // Чат закончен
                         this.markAsRead();
                         this.showDateButton();
                     }
@@ -278,12 +267,8 @@ class DialogChat {
     showDateButton() {
         this.chatChoices.innerHTML = `
             <div class="date-actions">
-                <button class="date-btn" id="dateBtn">
-                    💜 Пойти на свидание
-                </button>
-                <button class="back-to-grid-btn" id="backToGridBtn">
-                    ← К списку кандидатов
-                </button>
+                <button class="date-btn" id="dateBtn">💜 Пойти на свидание</button>
+                <button class="back-to-grid-btn" id="backToGridBtn">← К списку кандидатов</button>
             </div>
         `;
         
@@ -292,22 +277,20 @@ class DialogChat {
         });
         
         document.getElementById('backToGridBtn').addEventListener('click', () => {
-            window.location.href = '/swipe';
+            window.location.href = '/matches';
         });
         
         this.scrollToBottom();
     }
     
     goOnDate() {
-        // Сохраняем, что свидание состоялось
         const dates = JSON.parse(sessionStorage.getItem('dates') || '[]');
         if (!dates.includes(this.characterId)) {
             dates.push(this.characterId);
             sessionStorage.setItem('dates', JSON.stringify(dates));
         }
         
-        // Переходим на страницу результата
-        window.location.href = `/result/${this.characterId}/date_ending`;
+        window.location.href = '/result/' + this.characterId + '/date_ending';
     }
     
     scrollToBottom() {

@@ -4,23 +4,14 @@ class TinderSwipe {
     constructor() {
         this.cards = Array.from(document.querySelectorAll('.card'));
         this.currentCardIndex = 0;
-        this.likedCharacters = [];
+        this.likedCharacters = JSON.parse(sessionStorage.getItem('likedCharacters') || '[]');
         this.isDragging = false;
         this.startX = 0;
         this.startY = 0;
         this.currentX = 0;
         this.currentY = 0;
-        
-        this.allCharacters = this.cards.map(card => ({
-            id: card.dataset.id,
-            name: card.querySelector('.name-age')?.textContent.split(',')[0] || '',
-            age: card.querySelector('.name-age')?.textContent.split(',')[1]?.trim() || '',
-            bio: card.querySelector('.bio')?.textContent || '',
-            photo: card.querySelector('img')?.src || '',
-            interests: Array.from(card.querySelectorAll('.interest-tag')).map(tag => tag.textContent)
-        }));
-        
         this.audioContext = null;
+        
         this.init();
     }
     
@@ -47,9 +38,7 @@ class TinderSwipe {
         if (!this.audioContext) {
             try {
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            } catch(e) {
-                console.log('Audio not supported');
-            }
+            } catch(e) {}
         }
     }
     
@@ -95,9 +84,7 @@ class TinderSwipe {
                     oscillator.stop(this.audioContext.currentTime + 0.4);
                     break;
             }
-        } catch(e) {
-            console.log('Sound play error:', e);
-        }
+        } catch(e) {}
     }
     
     showTopCard() {
@@ -227,8 +214,12 @@ class TinderSwipe {
         const characterId = card.dataset.id;
         
         if (direction === 'right' || direction === 'up') {
-            this.likedCharacters.push(characterId);
+            if (!this.likedCharacters.includes(characterId)) {
+                this.likedCharacters.push(characterId);
+            }
         }
+        
+        sessionStorage.setItem('likedCharacters', JSON.stringify(this.likedCharacters));
         
         setTimeout(() => {
             this.nextCard();
@@ -246,88 +237,7 @@ class TinderSwipe {
     }
     
     showEmptyState() {
-        const cardsContainer = document.getElementById('cardsContainer');
-        if (!cardsContainer) return;
-        
-        const swipeContainer = document.querySelector('.swipe-container');
-        if (swipeContainer) {
-            swipeContainer.style.maxWidth = '100%';
-            swipeContainer.style.padding = '0';
-        }
-        
-        const swipeHeader = document.querySelector('.swipe-header');
-        if (swipeHeader) {
-            swipeHeader.style.display = 'none';
-        }
-        
-        // Получаем данные из sessionStorage
-        let dates = [];
-        try {
-            dates = JSON.parse(sessionStorage.getItem('dates') || '[]');
-        } catch(e) {
-            dates = [];
-        }
-        
-        const characters = this.allCharacters.map(char => ({
-            ...char,
-            liked: this.likedCharacters.includes(char.id),
-            chatRead: sessionStorage.getItem('chat_read_' + char.id) === 'true',
-            dateDone: dates.includes(char.id)
-        }));
-        
-        cardsContainer.innerHTML = `
-            <div class="match-grid-container">
-                <h2 class="match-title">Твой выбор 💜</h2>
-                <p class="match-subtitle">Выбери, с кем хочешь пообщаться!</p>
-                <div class="match-grid">
-                    ${characters.map(char => {
-                        let buttonsHtml = '';
-                        
-                        if (char.dateDone) {
-                            buttonsHtml = `<button class="card-chat-btn date-done-btn" disabled>💜 Свидание было</button>`;
-                        } else if (char.liked) {
-                            if (char.chatRead) {
-                                buttonsHtml = `
-                                    <button class="card-chat-btn" onclick="window.location.href='/chat/${char.id}'">💬 Продолжить чат</button>
-                                    <button class="card-date-btn" onclick="window.goOnDate('${char.id}')">💜 Свидание</button>
-                                `;
-                            } else {
-                                buttonsHtml = `<button class="card-chat-btn" onclick="window.location.href='/chat/${char.id}'">💬 Чат</button>`;
-                            }
-                        } else {
-                            buttonsHtml = `<button class="card-chat-btn disabled" disabled>✕ Недоступен</button>`;
-                        }
-                        
-                        return `
-                            <div class="match-card ${char.liked ? 'liked' : 'disliked'} ${char.dateDone ? 'date-done' : ''}" data-id="${char.id}">
-                                <div class="match-card-photo">
-                                    <img src="${char.photo}" alt="${char.name}">
-                                    <div class="match-status">
-                                        ${char.dateDone ? '💜' : char.liked ? '❤️' : '✕'}
-                                    </div>
-                                </div>
-                                <div class="match-card-info">
-                                    <div class="match-name">${char.name}, ${char.age}</div>
-                                    <div class="match-bio">${char.bio}</div>
-                                </div>
-                                <div class="match-card-actions">
-                                    ${buttonsHtml}
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-                <div class="match-actions-bottom">
-                    <a href="/" class="reset-btn">🔄 На главную</a>
-                </div>
-            </div>
-        `;
-        
-        const swipeActions = document.querySelector('.swipe-actions');
-        if (swipeActions) swipeActions.style.display = 'none';
-        
-        const counter = document.getElementById('counter');
-        if (counter) counter.textContent = '0';
+        window.location.href = '/matches';
     }
     
     updateCounter() {
@@ -337,21 +247,6 @@ class TinderSwipe {
     }
 }
 
-// Глобальная функция для кнопки "Свидание"
-window.goOnDate = function(characterId) {
-    try {
-        const dates = JSON.parse(sessionStorage.getItem('dates') || '[]');
-        if (!dates.includes(characterId)) {
-            dates.push(characterId);
-            sessionStorage.setItem('dates', JSON.stringify(dates));
-        }
-    } catch(e) {
-        sessionStorage.setItem('dates', JSON.stringify([characterId]));
-    }
-    window.location.href = '/result/' + characterId + '/date_ending';
-};
-
-// Запуск
 document.addEventListener('DOMContentLoaded', () => {
     new TinderSwipe();
 });
