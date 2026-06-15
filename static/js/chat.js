@@ -3,107 +3,131 @@
 class DialogChat {
     constructor(dialogData, characterId) {
         console.log('DialogChat constructor called');
-        console.log('dialogData:', dialogData);
-        console.log('characterId:', characterId);
         
         this.dialog = dialogData;
         this.characterId = characterId;
         this.currentMessageIndex = 0;
         this.chatMessages = document.getElementById('chatMessages');
         this.chatChoices = document.getElementById('chatChoices');
-        this.isTyping = false; // Флаг, чтобы предотвратить множественный ввод
-        
-        // Инициализация аудио контекста для звуков
+        this.isTyping = false;
+        this.chatEnded = false;  // Флаг завершения чата
         this.audioContext = null;
         
-        if (!this.chatMessages) {
-            console.error('chatMessages element not found!');
-            return;
-        }
-        if (!this.chatChoices) {
-            console.error('chatChoices element not found!');
+        // Загружаем историю, если чат уже был
+        this.loadHistory();
+        
+        if (!this.chatMessages || !this.chatChoices) {
+            console.error('Chat elements not found!');
             return;
         }
         
-        console.log('Chat elements found, starting dialog...');
         this.init();
     }
     
     init() {
-        // Проверяем, что диалог загружен
         if (!this.dialog || !this.dialog.messages) {
-            console.error('No dialog data!');
             this.chatMessages.innerHTML = '<div class="message candidate-message">Ошибка загрузки диалога 😢</div>';
             return;
         }
         
-        // Показываем первое сообщение
-        setTimeout(() => {
+        // Если чат уже прочитан - показываем кнопку "Свидание"
+        if (this.isChatRead()) {
+            this.showDateButton();
+            return;
+        }
+        
+        // Если есть история - продолжаем с места остановки
+        if (this.hasHistory()) {
             this.showNextMessage();
-        }, 500);
+        } else {
+            setTimeout(() => this.showNextMessage(), 500);
+        }
     }
     
-    // Инициализация аудио
+    // Проверка - прочитан ли чат полностью
+    isChatRead() {
+        return sessionStorage.getItem(`chat_read_${this.characterId}`) === 'true';
+    }
+    
+    // Проверка - есть ли история
+    hasHistory() {
+        return sessionStorage.getItem(`chat_progress_${this.characterId}`) !== null;
+    }
+    
+    // Загрузка истории
+    loadHistory() {
+        const saved = sessionStorage.getItem(`chat_progress_${this.characterId}`);
+        if (saved) {
+            this.currentMessageIndex = parseInt(saved);
+        }
+        
+        const savedMessages = sessionStorage.getItem(`chat_messages_${this.characterId}`);
+        if (savedMessages) {
+            this.chatMessages.innerHTML = savedMessages;
+            this.scrollToBottom();
+        }
+    }
+    
+    // Сохранение прогресса
+    saveProgress() {
+        sessionStorage.setItem(`chat_progress_${this.characterId}`, this.currentMessageIndex);
+        sessionStorage.setItem(`chat_messages_${this.characterId}`, this.chatMessages.innerHTML);
+    }
+    
+    // Пометить чат как прочитанный
+    markAsRead() {
+        sessionStorage.setItem(`chat_read_${this.characterId}`, 'true');
+    }
+    
     initAudio() {
         if (!this.audioContext) {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
     }
     
-    // Звук отправки сообщения
     playMessageSound() {
         this.initAudio();
-        
         if (!this.audioContext) return;
         
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
         
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-        
-        // Короткий приятный звук
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(1000, this.audioContext.currentTime + 0.05);
-        gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + 0.1);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, this.audioContext.currentTime);
+        osc.frequency.setValueAtTime(1000, this.audioContext.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + 0.1);
     }
     
-    // Звук получения сообщения
     playReceiveSound() {
         this.initAudio();
-        
         if (!this.audioContext) return;
         
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
         
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-        
-        // Более низкий звук для входящих
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(500, this.audioContext.currentTime + 0.1);
-        gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + 0.15);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.audioContext.currentTime);
+        osc.frequency.setValueAtTime(500, this.audioContext.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.08, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + 0.15);
     }
     
     showNextMessage() {
-        console.log('Showing message index:', this.currentMessageIndex);
-        
         if (this.currentMessageIndex >= this.dialog.messages.length) {
-            console.log('No more messages');
+            this.showChatEnded();
             return;
         }
         
         const message = this.dialog.messages[this.currentMessageIndex];
-        console.log('Current message:', message);
         
         if (message.from === 'candidate') {
             this.showCandidateMessage(message);
@@ -113,21 +137,16 @@ class DialogChat {
     }
     
     showCandidateMessage(message) {
-        console.log('Showing candidate message:', message.text);
-        
-        // Создаем контейнер для сообщения
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message candidate-message';
         this.chatMessages.appendChild(messageDiv);
         
-        // Проигрываем звук получения сообщения
         this.playReceiveSound();
         
-        // Эффект печатания текста
         this.typeText(messageDiv, message.text, () => {
-            // После завершения печати показываем следующее сообщение
             setTimeout(() => {
                 this.currentMessageIndex++;
+                this.saveProgress();
                 this.showNextMessage();
                 this.scrollToBottom();
             }, 500);
@@ -138,7 +157,6 @@ class DialogChat {
         let index = 0;
         element.textContent = '';
         
-        // Добавляем индикатор печати
         const typingDots = document.createElement('span');
         typingDots.className = 'typing-indicator';
         typingDots.innerHTML = '<span>.</span><span>.</span><span>.</span>';
@@ -146,55 +164,39 @@ class DialogChat {
         
         const interval = setInterval(() => {
             if (index < text.length) {
-                // Убираем индикатор печати перед добавлением первой буквы
                 if (index === 0 && typingDots.parentNode) {
                     typingDots.remove();
                 }
-                
                 element.textContent += text[index];
                 index++;
                 this.scrollToBottom();
-                
-                // Случайный звук печати (не на каждую букву)
-                if (Math.random() < 0.3) {
-                    this.playTypingSound();
-                }
+                if (Math.random() < 0.3) this.playTypingSound();
             } else {
                 clearInterval(interval);
-                
-                // Убираем индикатор, если текст пустой
-                if (typingDots.parentNode) {
-                    typingDots.remove();
-                }
-                
+                if (typingDots.parentNode) typingDots.remove();
                 if (callback) callback();
             }
-        }, 40); // Скорость печати - 40мс на символ
+        }, 40);
     }
     
-    // Звук печати (очень тихий)
     playTypingSound() {
         this.initAudio();
-        
         if (!this.audioContext) return;
         
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
         
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(1000 + Math.random() * 500, this.audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.02, this.audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.03);
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + 0.03);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1000 + Math.random() * 500, this.audioContext.currentTime);
+        gain.gain.setValueAtTime(0.02, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.03);
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + 0.03);
     }
     
     showBrideChoices(message) {
-        console.log('Showing choices:', message.choices);
-        
         this.chatChoices.innerHTML = '';
         
         message.choices.forEach((choice, index) => {
@@ -204,7 +206,6 @@ class DialogChat {
             button.style.animationDelay = `${index * 0.2}s`;
             
             button.addEventListener('click', () => {
-                console.log('Choice selected:', choice);
                 this.handleChoice(choice);
             });
             
@@ -215,89 +216,98 @@ class DialogChat {
     }
     
     handleChoice(choice) {
-    console.log('Handling choice:', choice);
-    
-    if (this.isTyping) return;
-    this.isTyping = true;
-    
-    this.chatChoices.innerHTML = '';
-    this.playMessageSound();
-    
-    // Показываем ответ невесты
-    const brideMessage = document.createElement('div');
-    brideMessage.className = 'message bride-message';
-    brideMessage.textContent = choice.text;
-    this.chatMessages.appendChild(brideMessage);
-    this.scrollToBottom();
-    
-    // Показываем ответ кандидата (если есть)
-    if (choice.reply) {
-        setTimeout(() => {
-            const replyMessage = document.createElement('div');
-            replyMessage.className = 'message candidate-message';
-            this.chatMessages.appendChild(replyMessage);
-            this.playReceiveSound();
+        if (this.isTyping) return;
+        this.isTyping = true;
+        
+        this.chatChoices.innerHTML = '';
+        this.playMessageSound();
+        
+        const brideMessage = document.createElement('div');
+        brideMessage.className = 'message bride-message';
+        brideMessage.textContent = choice.text;
+        this.chatMessages.appendChild(brideMessage);
+        this.scrollToBottom();
+        
+        if (choice.reply) {
+            setTimeout(() => {
+                const replyMessage = document.createElement('div');
+                replyMessage.className = 'message candidate-message';
+                this.chatMessages.appendChild(replyMessage);
+                this.playReceiveSound();
+                
+                this.typeText(replyMessage, choice.reply, () => {
+                    this.currentMessageIndex++;
+                    this.saveProgress();
+                    
+                    // Проверяем, есть ли ещё сообщения
+                    if (this.currentMessageIndex < this.dialog.messages.length) {
+                        this.isTyping = false;
+                        setTimeout(() => this.showNextMessage(), 500);
+                    } else {
+                        // Чат закончен
+                        this.markAsRead();
+                        this.showDateButton();
+                    }
+                });
+            }, 800);
+        } else {
+            this.currentMessageIndex++;
+            this.saveProgress();
             
-            this.typeText(replyMessage, choice.reply, () => {
-                // ← ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ:
-                // Проверяем, есть ли ещё сообщения
-                this.currentMessageIndex++;
-                if (this.currentMessageIndex < this.dialog.messages.length) {
-                    // Есть ещё сообщения — показываем их
-                    this.isTyping = false;
-                    setTimeout(() => this.showNextMessage(), 500);
-                } else if (choice.next) {
-                    // Сообщений больше нет — показываем концовку
-                    setTimeout(() => this.showEnding(choice.next), 500);
-                }
-            });
-        }, 800);
-    } else {
-        // Если нет reply — проверяем следующие сообщения
-        this.currentMessageIndex++;
-        if (this.currentMessageIndex < this.dialog.messages.length) {
-            this.isTyping = false;
-            setTimeout(() => this.showNextMessage(), 500);
-        } else if (choice.next) {
-            setTimeout(() => this.showEnding(choice.next), 500);
+            if (this.currentMessageIndex < this.dialog.messages.length) {
+                this.isTyping = false;
+                setTimeout(() => this.showNextMessage(), 500);
+            } else {
+                this.markAsRead();
+                this.showDateButton();
+            }
         }
     }
-}
     
-    showEnding(endingKey) {
-        console.log('Showing ending:', endingKey);
+    showChatEnded() {
+        const endMessage = document.createElement('div');
+        endMessage.className = 'chat-ended-message';
+        endMessage.textContent = '💬 Доступные сообщения закончились';
+        this.chatMessages.appendChild(endMessage);
+        this.scrollToBottom();
         
-        // Проигрываем финальный звук
-        this.playEndingSound();
-        
-        setTimeout(() => {
-            window.location.href = `/result/${this.characterId}/${endingKey}`;
-        }, 600);
+        this.markAsRead();
+        this.showDateButton();
     }
     
-    // Финальный звук
-    playEndingSound() {
-        this.initAudio();
+    showDateButton() {
+        this.chatChoices.innerHTML = `
+            <div class="date-actions">
+                <button class="date-btn" id="dateBtn">
+                    💜 Пойти на свидание
+                </button>
+                <button class="back-to-grid-btn" id="backToGridBtn">
+                    ← К списку кандидатов
+                </button>
+            </div>
+        `;
         
-        if (!this.audioContext) return;
-        
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // До-Ми-Соль-До
-        const duration = 0.15;
-        
-        notes.forEach((freq, i) => {
-            const oscillator = this.audioContext.createOscillator();
-            const gainNode = this.audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(this.audioContext.destination);
-            
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime + i * duration);
-            gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime + i * duration);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + (i + 1) * duration);
-            oscillator.start(this.audioContext.currentTime + i * duration);
-            oscillator.stop(this.audioContext.currentTime + (i + 1) * duration);
+        document.getElementById('dateBtn').addEventListener('click', () => {
+            this.goOnDate();
         });
+        
+        document.getElementById('backToGridBtn').addEventListener('click', () => {
+            window.location.href = '/swipe';
+        });
+        
+        this.scrollToBottom();
+    }
+    
+    goOnDate() {
+        // Сохраняем, что свидание состоялось
+        const dates = JSON.parse(sessionStorage.getItem('dates') || '[]');
+        if (!dates.includes(this.characterId)) {
+            dates.push(this.characterId);
+            sessionStorage.setItem('dates', JSON.stringify(dates));
+        }
+        
+        // Переходим на страницу результата
+        window.location.href = `/result/${this.characterId}/date_ending`;
     }
     
     scrollToBottom() {
@@ -307,16 +317,8 @@ class DialogChat {
     }
 }
 
-// Запускаем когда DOM загружен
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, checking dialogData...');
-    console.log('dialogData exists:', typeof dialogData !== 'undefined');
-    console.log('characterId exists:', typeof characterId !== 'undefined');
-    
     if (typeof dialogData !== 'undefined' && typeof characterId !== 'undefined') {
-        console.log('Starting DialogChat...');
         new DialogChat(dialogData, characterId);
-    } else {
-        console.error('dialogData or characterId not defined!');
     }
 });

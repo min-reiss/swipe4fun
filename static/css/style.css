@@ -15,7 +15,7 @@ body {
     align-items: center;
 }
 
-/* СТАРТОВАЯ СТРАНИЦА */
+/* ========== СТАРТОВАЯ СТРАНИЦА ========== */
 .start-screen {
     display: flex;
     justify-content: center;
@@ -90,7 +90,7 @@ body {
     transform: translateX(4px);
 }
 
-/* СТРАНИЦА СО СВАЙПАМИ */
+/* ========== СТРАНИЦА СО СВАЙПАМИ ========== */
 .swipe-container {
     width: 100%;
     max-width: 450px;
@@ -98,12 +98,22 @@ body {
     display: flex;
     flex-direction: column;
     padding: 20px;
+    position: relative;
+}
+
+.swipe-container.grid-mode {
+    max-width: 100% !important;
+    padding: 0 !important;
 }
 
 .swipe-header {
     text-align: center;
-    padding: 20px 0;
+    padding: 20px 0 25px 0;
     color: #7c3aed;
+    flex-shrink: 0;
+    z-index: 100;
+    position: relative;
+    background: transparent;
 }
 
 .header-icon {
@@ -127,23 +137,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px 0;
+    margin: 60px 0 20px 0;
+    min-height: 0;
+    z-index: 2;
 }
 
 .card {
     position: absolute;
     width: 100%;
-    height: 500px;
+    max-width: 400px;
+    height: 480px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
     overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    cursor: grab;
+}
+
+.card:active {
+    cursor: grabbing;
 }
 
 .card-photo {
     width: 100%;
-    height: 65%;
+    height: 60%;
     background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
     position: relative;
 }
@@ -156,7 +174,7 @@ body {
 
 .card-info {
     padding: 20px;
-    height: 35%;
+    height: 40%;
 }
 
 .name-age {
@@ -191,54 +209,39 @@ body {
     display: flex;
     justify-content: center;
     gap: 24px;
-    padding: 20px 0;
+    padding: 20px 0 30px 0;
+    flex-shrink: 0;
+    z-index: 3;
+    position: relative;
+    background: transparent;
+    margin-top: auto;
 }
 
 .action-btn {
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    border: none;
+    border: 2px solid #e9d5ff;
     font-size: 28px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.dislike-btn {
     background: white;
-    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.dislike-btn:hover {
-    background: #fef2f2;
-    transform: scale(1.1);
-}
+.dislike-btn { color: #ef4444; }
+.dislike-btn:hover { background: #fef2f2; transform: scale(1.1); border-color: #ef4444; }
 
-.superlike-btn {
-    background: white;
-    color: #8b5cf6;
-    width: 52px;
-    height: 52px;
-    font-size: 22px;
-}
+.superlike-btn { color: #8b5cf6; width: 52px; height: 52px; font-size: 22px; }
+.superlike-btn:hover { background: #f3e8ff; transform: scale(1.1); border-color: #8b5cf6; }
 
-.superlike-btn:hover {
-    background: #f3e8ff;
-    transform: scale(1.1);
-}
+.like-btn { color: #ec4899; }
+.like-btn:hover { background: #fdf2f8; transform: scale(1.1); border-color: #ec4899; }
 
-.like-btn {
-    background: white;
-    color: #ec4899;
-}
-
-.like-btn:hover {
-    background: #fdf2f8;
-    transform: scale(1.1);
-}
-
-/* СТРАНИЦА ЧАТА */
+/* ========== СТРАНИЦА ЧАТА ========== */
 .chat-container {
     width: 100%;
     max-width: 500px;
@@ -294,7 +297,89 @@ body {
     border-top: 1px solid #e9d5ff;
 }
 
-/* СТРАНИЦА РЕЗУЛЬТАТА */
+.message {
+    max-width: 80%;
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    animation: messageAppear 0.3s ease;
+}
+
+@keyframes messageAppear {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.candidate-message {
+    background: #f3e8ff;
+    color: #4c1d95;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.bride-message {
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.choice-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    background: white;
+    border: 2px solid #e9d5ff;
+    border-radius: 14px;
+    color: #7c3aed;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    animation: slideIn 0.4s ease backwards;
+}
+
+.choice-btn:hover {
+    background: #faf5ff;
+    border-color: #7c3aed;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Индикатор печати */
+.typing-indicator {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.typing-indicator span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7c3aed;
+    margin: 0 1px;
+    animation: typingDot 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingDot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* ========== СТРАНИЦА РЕЗУЛЬТАТА ========== */
 .result-screen {
     display: flex;
     justify-content: center;
@@ -354,316 +439,262 @@ body {
     color: #7c3aed;
 }
 
-/* СТИЛИ ДЛЯ ЧАТА */
-.message {
-    max-width: 80%;
-    margin-bottom: 12px;
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 16px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    animation: messageAppear 0.3s ease;
-}
-
-@keyframes messageAppear {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.candidate-message {
-    background: #f3e8ff;
-    color: #4c1d95;
-    margin-right: auto;
-    border-bottom-left-radius: 4px;
-}
-
-.bride-message {
-    background: linear-gradient(135deg, #7c3aed, #9333ea);
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 4px;
-}
-
-.choice-btn {
-    display: block;
+/* ========== СТРАНИЦА МАТЧЕЙ (СЕТКА) ========== */
+.match-grid-container {
     width: 100%;
-    padding: 14px 18px;
-    margin-bottom: 10px;
-    background: white;
-    border: 2px solid #e9d5ff;
-    border-radius: 14px;
-    color: #7c3aed;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: left;
-    animation: slideIn 0.4s ease backwards;
-}
-
-.choice-btn:hover {
-    background: #faf5ff;
-    border-color: #7c3aed;
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* EMPTY STATE */
-.empty-state {
+    max-width: 100%;
+    padding: 20px 40px;
     text-align: center;
-    padding: 40px 20px;
-    color: #6b7280;
-}
-
-.empty-emoji {
-    font-size: 72px;
-    margin-bottom: 20px;
-}
-
-.empty-state h3 {
-    font-size: 24px;
-    color: #7c3aed;
-    margin-bottom: 12px;
-}
-
-.empty-state p {
-    font-size: 16px;
-    margin-bottom: 24px;
-}
-
-.liked-list {
+    height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 24px;
 }
 
-.liked-item {
-    background: #f3e8ff;
+.match-title {
     color: #7c3aed;
-    padding: 12px 18px;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.liked-item:hover {
-    background: #e9d5ff;
-    transform: translateX(4px);
-}
-
-/* ФИКС ДЛЯ КАРТОЧЕК */
-.card {
-    transition: transform 0.4s ease, opacity 0.4s ease;
-    cursor: grab;
-}
-
-.card:active {
-    cursor: grabbing;
-}
-
-/* АДАПТИВНОСТЬ */
-@media (max-width: 500px) {
-    .swipe-container {
-        padding: 10px;
-    }
-    
-    .card {
-        height: 450px;
-    }
-    
-    .action-btn {
-        width: 56px;
-        height: 56px;
-        font-size: 24px;
-    }
-}
-
-/* Индикатор печати */
-.typing-indicator {
-    display: inline-block;
-    margin-left: 4px;
-}
-
-.typing-indicator span {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #7c3aed;
-    margin: 0 1px;
-    animation: typingDot 1.4s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes typingDot {
-    0%, 60%, 100% {
-        transform: translateY(0);
-        opacity: 0.5;
-    }
-    30% {
-        transform: translateY(-8px);
-        opacity: 1;
-    }
-}
-
-/* СТРАНИЦА СО СВАЙПАМИ - ИСПРАВЛЕНИЯ */
-.swipe-container {
-    width: 100%;
-    max-width: 450px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    position: relative;
-}
-
-.swipe-header {
-    text-align: center;
-    padding: 20px 0 25px 0;
-    color: #7c3aed;
-    flex-shrink: 0;  /* Не сжимается */
-    z-index: 100;  /* ← Увеличен z-index, теперь точно поверх всего */
-    position: relative;  /* ← Обязательно для z-index */
-    background: transparent;  /* Прозрачный фон */
-}
-
-.header-icon {
-    font-size: 32px;
+    font-size: 28px;
     margin-bottom: 8px;
+    flex-shrink: 0;
 }
 
-.swipe-header h2 {
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.counter {
+.match-subtitle {
     color: #9333ea;
-    font-size: 14px;
-}
-.cards-container {
-    flex: 1;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 60px 0 20px 0;  /* Отступы сверху и снизу */
-    min-height: 0;  /* Важно для flex */
-    z-index: 2;
+    font-size: 16px;
+    margin-bottom: 24px;
+    flex-shrink: 0;
 }
 
-.card {
-    position: absolute;
+.match-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    flex: 1;
+    align-content: center;
+    padding: 10px;
+    max-width: 1400px;
+    margin: 0 auto;
     width: 100%;
-    max-width: 400px;  /* Ограничиваем максимальную ширину */
-    height: 480px;  /* Чуть уменьшена высота */
+}
+
+.match-card {
     background: white;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
     overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
 }
 
-.card-photo {
+.match-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.25);
+}
+
+.match-card.liked {
+    opacity: 1;
+}
+
+.match-card.disliked {
+    opacity: 0.45;
+    filter: grayscale(40%);
+}
+
+.match-card-photo {
     width: 100%;
-    height: 60%;  /* Уменьшено с 65% */
+    aspect-ratio: 3/4;
     background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
     position: relative;
+    overflow: hidden;
 }
 
-.card-photo img {
+.match-card-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.card-info {
-    padding: 20px;
-    height: 40%;  /* Увеличено с 35% */
-}
-
-/* Кнопки свайпа - фикс перекрытия */
-.swipe-actions {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    padding: 20px 0 30px 0;  /* Увеличен нижний отступ */
-    flex-shrink: 0;  /* Не сжимается */
-    z-index: 3;  /* Поверх карточек */
-    position: relative;
-    background: transparent;  /* Прозрачный фон */
-    margin-top: auto;  /* Прижимаем к низу */
-}
-
-.action-btn {
-    width: 64px;
-    height: 64px;
+.match-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid #e9d5ff;
-    font-size: 28px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.dislike-btn {
-    color: #ef4444;
+.match-card-info {
+    padding: 16px;
+    flex: 1;
 }
 
-.dislike-btn:hover {
-    background: #fef2f2;
-    transform: scale(1.1);
-    border-color: #ef4444;
+.match-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
 }
 
-.superlike-btn {
-    color: #8b5cf6;
-    width: 52px;
-    height: 52px;
-    font-size: 22px;
+.match-bio {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.4;
+    margin-bottom: 12px;
 }
 
-.superlike-btn:hover {
+.match-card-actions {
+    padding: 0 16px 16px;
+}
+
+.card-chat-btn {
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+
+.card-chat-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.card-chat-btn.disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.match-actions-bottom {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-shrink: 0;
+}
+
+.reset-btn {
+    color: #7c3aed;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 12px 32px;
+    border: 2px solid #e9d5ff;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reset-btn:hover {
     background: #f3e8ff;
-    transform: scale(1.1);
-    border-color: #8b5cf6;
+    transform: translateY(-2px);
 }
 
-.like-btn {
+/* Сообщение о конце чата */
+.chat-ended-message {
+    text-align: center;
+    color: #9333ea;
+    font-size: 14px;
+    padding: 16px;
+    margin: 12px 0;
+    background: #f3e8ff;
+    border-radius: 12px;
+    opacity: 0.8;
+}
+
+/* Кнопки после чата */
+.date-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+}
+
+.date-btn {
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+.date-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+}
+
+.back-to-grid-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: #f3e8ff;
+    color: #7c3aed;
+    border: 2px solid #e9d5ff;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-grid-btn:hover {
+    background: #e9d5ff;
+    transform: translateY(-2px);
+}
+
+/* Карточка после свидания */
+.match-card.date-done {
+    opacity: 0.8;
+    border-color: #ec4899 !important;
+}
+
+.match-card.date-done .match-card-photo {
+    filter: brightness(1.05);
+}
+
+/* Кнопка свидания на карточке */
+.card-date-btn {
+    width: 100%;
+    padding: 8px 20px;
+    margin-top: 6px;
+    border: 2px solid #ec4899;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
     color: #ec4899;
 }
 
-.like-btn:hover {
+.card-date-btn:hover {
     background: #fdf2f8;
-    transform: scale(1.1);
-    border-color: #ec4899;
+    transform: translateY(-2px);
+}
+
+/* Кнопка "Свидание было" */
+.date-done-btn {
+    background: #fce7f3 !important;
+    color: #be185d !important;
+    cursor: default !important;
 }
