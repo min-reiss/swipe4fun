@@ -215,48 +215,54 @@ class DialogChat {
     }
     
     handleChoice(choice) {
-        console.log('Handling choice:', choice);
-        
-        // Блокируем повторные клики
-        if (this.isTyping) return;
-        this.isTyping = true;
-        
-        // Скрываем кнопки выбора
-        this.chatChoices.innerHTML = '';
-        
-        // Проигрываем звук отправки
-        this.playMessageSound();
-        
-        // Показываем ответ невесты
-        const brideMessage = document.createElement('div');
-        brideMessage.className = 'message bride-message';
-        brideMessage.textContent = choice.text;
-        this.chatMessages.appendChild(brideMessage);
-        this.scrollToBottom();
-        
-        // Показываем ответ кандидата (если есть)
-        if (choice.reply) {
-            setTimeout(() => {
-                const replyMessage = document.createElement('div');
-                replyMessage.className = 'message candidate-message';
-                this.chatMessages.appendChild(replyMessage);
-                
-                // Проигрываем звук получения
-                this.playReceiveSound();
-                
-                // Печатаем ответ с анимацией
-                this.typeText(replyMessage, choice.reply, () => {
-                    setTimeout(() => {
-                        this.showEnding(choice.next);
-                    }, 1500);
-                });
-            }, 1000);
-        } else {
-            setTimeout(() => {
-                this.showEnding(choice.next);
-            }, 1000);
+    console.log('Handling choice:', choice);
+    
+    if (this.isTyping) return;
+    this.isTyping = true;
+    
+    this.chatChoices.innerHTML = '';
+    this.playMessageSound();
+    
+    // Показываем ответ невесты
+    const brideMessage = document.createElement('div');
+    brideMessage.className = 'message bride-message';
+    brideMessage.textContent = choice.text;
+    this.chatMessages.appendChild(brideMessage);
+    this.scrollToBottom();
+    
+    // Показываем ответ кандидата (если есть)
+    if (choice.reply) {
+        setTimeout(() => {
+            const replyMessage = document.createElement('div');
+            replyMessage.className = 'message candidate-message';
+            this.chatMessages.appendChild(replyMessage);
+            this.playReceiveSound();
+            
+            this.typeText(replyMessage, choice.reply, () => {
+                // ← ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ:
+                // Проверяем, есть ли ещё сообщения
+                this.currentMessageIndex++;
+                if (this.currentMessageIndex < this.dialog.messages.length) {
+                    // Есть ещё сообщения — показываем их
+                    this.isTyping = false;
+                    setTimeout(() => this.showNextMessage(), 500);
+                } else if (choice.next) {
+                    // Сообщений больше нет — показываем концовку
+                    setTimeout(() => this.showEnding(choice.next), 500);
+                }
+            });
+        }, 800);
+    } else {
+        // Если нет reply — проверяем следующие сообщения
+        this.currentMessageIndex++;
+        if (this.currentMessageIndex < this.dialog.messages.length) {
+            this.isTyping = false;
+            setTimeout(() => this.showNextMessage(), 500);
+        } else if (choice.next) {
+            setTimeout(() => this.showEnding(choice.next), 500);
         }
     }
+}
     
     showEnding(endingKey) {
         console.log('Showing ending:', endingKey);

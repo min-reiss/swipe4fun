@@ -61,4 +61,4 @@ def api_dialogues(character_id):
     return jsonify(DIALOGS.get(str(character_id), {}))
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=5000)
